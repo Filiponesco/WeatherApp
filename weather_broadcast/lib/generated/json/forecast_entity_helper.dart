@@ -1,35 +1,32 @@
-import 'package:weather_broadcast/broadcast_entity.dart';
+import 'package:weather_broadcast/models/forecast_entity.dart';
 
-broadcastEntityFromJson(BroadcastEntity data, Map<String, dynamic> json) {
+forecastEntityFromJson(ForecastEntity data, Map<String, dynamic> json) {
 	if (json['coord'] != null) {
-		data.coord = new BroadcastCoord().fromJson(json['coord']);
+		data.coord = new ForecastCoord().fromJson(json['coord']);
 	}
 	if (json['weather'] != null) {
-		data.weather = new List<BroadcastWeather>();
+		data.weather = new List<ForecastWeather>();
 		(json['weather'] as List).forEach((v) {
-			data.weather.add(new BroadcastWeather().fromJson(v));
+			data.weather.add(new ForecastWeather().fromJson(v));
 		});
 	}
 	if (json['base'] != null) {
 		data.base = json['base']?.toString();
 	}
 	if (json['main'] != null) {
-		data.main = new BroadcastMain().fromJson(json['main']);
-	}
-	if (json['visibility'] != null) {
-		data.visibility = json['visibility']?.toInt();
+		data.main = new ForecastMain().fromJson(json['main']);
 	}
 	if (json['wind'] != null) {
-		data.wind = new BroadcastWind().fromJson(json['wind']);
+		data.wind = new ForecastWind().fromJson(json['wind']);
 	}
 	if (json['clouds'] != null) {
-		data.clouds = new BroadcastClouds().fromJson(json['clouds']);
+		data.clouds = new ForecastClouds().fromJson(json['clouds']);
 	}
 	if (json['dt'] != null) {
 		data.dt = json['dt']?.toInt();
 	}
 	if (json['sys'] != null) {
-		data.sys = new BroadcastSys().fromJson(json['sys']);
+		data.sys = new ForecastSys().fromJson(json['sys']);
 	}
 	if (json['timezone'] != null) {
 		data.timezone = json['timezone']?.toInt();
@@ -46,7 +43,7 @@ broadcastEntityFromJson(BroadcastEntity data, Map<String, dynamic> json) {
 	return data;
 }
 
-Map<String, dynamic> broadcastEntityToJson(BroadcastEntity entity) {
+Map<String, dynamic> forecastEntityToJson(ForecastEntity entity) {
 	final Map<String, dynamic> data = new Map<String, dynamic>();
 	if (entity.coord != null) {
 		data['coord'] = entity.coord.toJson();
@@ -58,7 +55,6 @@ Map<String, dynamic> broadcastEntityToJson(BroadcastEntity entity) {
 	if (entity.main != null) {
 		data['main'] = entity.main.toJson();
 	}
-	data['visibility'] = entity.visibility;
 	if (entity.wind != null) {
 		data['wind'] = entity.wind.toJson();
 	}
@@ -76,7 +72,7 @@ Map<String, dynamic> broadcastEntityToJson(BroadcastEntity entity) {
 	return data;
 }
 
-broadcastCoordFromJson(BroadcastCoord data, Map<String, dynamic> json) {
+forecastCoordFromJson(ForecastCoord data, Map<String, dynamic> json) {
 	if (json['lon'] != null) {
 		data.lon = json['lon']?.toDouble();
 	}
@@ -86,14 +82,14 @@ broadcastCoordFromJson(BroadcastCoord data, Map<String, dynamic> json) {
 	return data;
 }
 
-Map<String, dynamic> broadcastCoordToJson(BroadcastCoord entity) {
+Map<String, dynamic> forecastCoordToJson(ForecastCoord entity) {
 	final Map<String, dynamic> data = new Map<String, dynamic>();
 	data['lon'] = entity.lon;
 	data['lat'] = entity.lat;
 	return data;
 }
 
-broadcastWeatherFromJson(BroadcastWeather data, Map<String, dynamic> json) {
+forecastWeatherFromJson(ForecastWeather data, Map<String, dynamic> json) {
 	if (json['id'] != null) {
 		data.id = json['id']?.toInt();
 	}
@@ -109,7 +105,7 @@ broadcastWeatherFromJson(BroadcastWeather data, Map<String, dynamic> json) {
 	return data;
 }
 
-Map<String, dynamic> broadcastWeatherToJson(BroadcastWeather entity) {
+Map<String, dynamic> forecastWeatherToJson(ForecastWeather entity) {
 	final Map<String, dynamic> data = new Map<String, dynamic>();
 	data['id'] = entity.id;
 	data['main'] = entity.main;
@@ -118,7 +114,7 @@ Map<String, dynamic> broadcastWeatherToJson(BroadcastWeather entity) {
 	return data;
 }
 
-broadcastMainFromJson(BroadcastMain data, Map<String, dynamic> json) {
+forecastMainFromJson(ForecastMain data, Map<String, dynamic> json) {
 	if (json['temp'] != null) {
 		data.temp = json['temp']?.toDouble();
 	}
@@ -140,7 +136,7 @@ broadcastMainFromJson(BroadcastMain data, Map<String, dynamic> json) {
 	return data;
 }
 
-Map<String, dynamic> broadcastMainToJson(BroadcastMain entity) {
+Map<String, dynamic> forecastMainToJson(ForecastMain entity) {
 	final Map<String, dynamic> data = new Map<String, dynamic>();
 	data['temp'] = entity.temp;
 	data['feels_like'] = entity.feelsLike;
@@ -151,37 +147,41 @@ Map<String, dynamic> broadcastMainToJson(BroadcastMain entity) {
 	return data;
 }
 
-broadcastWindFromJson(BroadcastWind data, Map<String, dynamic> json) {
+forecastWindFromJson(ForecastWind data, Map<String, dynamic> json) {
 	if (json['speed'] != null) {
 		data.speed = json['speed']?.toDouble();
 	}
 	if (json['deg'] != null) {
 		data.deg = json['deg']?.toInt();
 	}
+	if (json['gust'] != null) {
+		data.gust = json['gust']?.toDouble();
+	}
 	return data;
 }
 
-Map<String, dynamic> broadcastWindToJson(BroadcastWind entity) {
+Map<String, dynamic> forecastWindToJson(ForecastWind entity) {
 	final Map<String, dynamic> data = new Map<String, dynamic>();
 	data['speed'] = entity.speed;
 	data['deg'] = entity.deg;
+	data['gust'] = entity.gust;
 	return data;
 }
 
-broadcastCloudsFromJson(BroadcastClouds data, Map<String, dynamic> json) {
+forecastCloudsFromJson(ForecastClouds data, Map<String, dynamic> json) {
 	if (json['all'] != null) {
 		data.all = json['all']?.toInt();
 	}
 	return data;
 }
 
-Map<String, dynamic> broadcastCloudsToJson(BroadcastClouds entity) {
+Map<String, dynamic> forecastCloudsToJson(ForecastClouds entity) {
 	final Map<String, dynamic> data = new Map<String, dynamic>();
 	data['all'] = entity.all;
 	return data;
 }
 
-broadcastSysFromJson(BroadcastSys data, Map<String, dynamic> json) {
+forecastSysFromJson(ForecastSys data, Map<String, dynamic> json) {
 	if (json['type'] != null) {
 		data.type = json['type']?.toInt();
 	}
@@ -200,7 +200,7 @@ broadcastSysFromJson(BroadcastSys data, Map<String, dynamic> json) {
 	return data;
 }
 
-Map<String, dynamic> broadcastSysToJson(BroadcastSys entity) {
+Map<String, dynamic> forecastSysToJson(ForecastSys entity) {
 	final Map<String, dynamic> data = new Map<String, dynamic>();
 	data['type'] = entity.type;
 	data['id'] = entity.id;

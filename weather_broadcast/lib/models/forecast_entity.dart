@@ -1,35 +1,34 @@
 import 'package:weather_broadcast/generated/json/base/json_convert_content.dart';
 import 'package:weather_broadcast/generated/json/base/json_filed.dart';
 
-class BroadcastEntity with JsonConvert<BroadcastEntity> {
-	BroadcastCoord coord;
-	List<BroadcastWeather> weather;
+class ForecastEntity with JsonConvert<ForecastEntity> {
+	ForecastCoord coord;
+	List<ForecastWeather> weather;
 	String base;
-	BroadcastMain main;
-	int visibility;
-	BroadcastWind wind;
-	BroadcastClouds clouds;
+	ForecastMain main;
+	ForecastWind wind;
+	ForecastClouds clouds;
 	int dt;
-	BroadcastSys sys;
+	ForecastSys sys;
 	int timezone;
 	int id;
 	String name;
 	int cod;
 }
 
-class BroadcastCoord with JsonConvert<BroadcastCoord> {
+class ForecastCoord with JsonConvert<ForecastCoord> {
 	double lon;
 	double lat;
 }
 
-class BroadcastWeather with JsonConvert<BroadcastWeather> {
+class ForecastWeather with JsonConvert<ForecastWeather> {
 	int id;
 	String main;
 	String description;
 	String icon;
 }
 
-class BroadcastMain with JsonConvert<BroadcastMain> {
+class ForecastMain with JsonConvert<ForecastMain> {
 	double temp;
 	@JSONField(name: "feels_like")
 	double feelsLike;
@@ -41,16 +40,17 @@ class BroadcastMain with JsonConvert<BroadcastMain> {
 	int humidity;
 }
 
-class BroadcastWind with JsonConvert<BroadcastWind> {
+class ForecastWind with JsonConvert<ForecastWind> {
 	double speed;
 	int deg;
+	double gust;
 }
 
-class BroadcastClouds with JsonConvert<BroadcastClouds> {
+class ForecastClouds with JsonConvert<ForecastClouds> {
 	int all;
 }
 
-class BroadcastSys with JsonConvert<BroadcastSys> {
+class ForecastSys with JsonConvert<ForecastSys> {
 	int type;
 	int id;
 	String country;
