@@ -14,23 +14,16 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  final repo = Repository();
+  final repo = Repository.getInstance();
 
   @override
   Widget build(BuildContext context) {
-    List<Future<ForecastEntity>> _forecasts = [
-      repo.getBroadcastForCity("Katowice"),
-      repo.getBroadcastForCity("Warszawa"),
-      repo.getBroadcastForCity("Ruda Slaska"),
-      repo.getBroadcastForCity("Madagaskar"),
-    ];
-
-    //Future<ForecastEntity> _currentLocation = repo.currentLocation;
-    var _lookups = List<Widget>();
-
-    for (var forecast in _forecasts) {
-      _lookups.add(_futureLookup(forecast));
-    }
+    Future<List<Future<ForecastEntity>>> _forecasts =
+        repo.allSavedCities().then((result) {
+      return List.generate(result.length, (i) {
+        return repo.getBroadcastForCity(result[i]);
+      });
+    });
 
     return Scaffold(
       body: SafeArea(
@@ -58,8 +51,24 @@ class HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            Column(
-              children: _lookups,
+            FutureBuilder(
+              future: _forecasts,
+              builder: (context, data) {
+                if(data.hasData){
+                  var _lookups = List<Widget>();
+
+                  for(var forecast in data.data){
+                    _lookups.add(_futureLookup(forecast, favorite: true));
+                  }
+
+                  return Column(children: _lookups,);
+                }
+                else if(data.hasError){
+                  //error handling with connection to database
+                  return Text("Connection with database error");
+                }
+                return CircularProgressIndicator();
+              },
             ),
           ],
         ),
@@ -72,14 +81,15 @@ class HomePageState extends State<HomePage> {
   }
 }
 
-Widget _futureLookup(Future<ForecastEntity> forecast) {
+Widget _futureLookup(Future<ForecastEntity> forecast, {bool favorite = false}) {
   return FutureBuilder(
     future: forecast,
     builder: (context, data) {
       if (data.hasData) {
+        (data.data as ForecastEntity).favorite = favorite;
         return ForecastLookup(forecast: data.data);
       } else if (data.hasError) {
-        Future.delayed(Duration.zero, () => errorDialog(context));
+        //error handling with connecting to api or internet connection
         return Column();
       }
       return Center(
@@ -87,40 +97,4 @@ Widget _futureLookup(Future<ForecastEntity> forecast) {
       );
     },
   );
-}
-
-void errorDialog(BuildContext context) {
-  showDialog<void>(
-    context: context,
-    barrierDismissible: true,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Error'),
-        content: FutureBuilder<bool>(
-          future: isConnectedToInternet(),
-          builder: (context, data) {
-            if (data.hasData) if (data.data)
-              return Text("There is no such city in API");
-            else
-              return Text("There is problem with connection");
-            return Container();
-          },
-        ),
-        actions: [
-          FlatButton(
-            child: Text('Ok'),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-
-Future<bool> isConnectedToInternet() async {
-  var connectivityResult = await Connectivity().checkConnectivity();
-  if (connectivityResult != ConnectivityResult.none) return true;
-  return false;
 }

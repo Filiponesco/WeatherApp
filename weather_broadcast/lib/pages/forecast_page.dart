@@ -2,17 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:weather_broadcast/models/forecast_entity.dart';
 import 'package:weather_broadcast/custom_icons_icons.dart';
+import 'package:weather_broadcast/repository.dart';
 import 'package:weather_broadcast/widgets/background_photo.dart';
 
-class ForecastPage extends StatelessWidget {
+class ForecastPage extends StatefulWidget {
   final ForecastEntity forecast;
+
+  const ForecastPage({Key key, this.forecast}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    return ForecastPageState();
+  }
+}
+
+class ForecastPageState extends State<ForecastPage> {
   final double paddingWeight = 20;
   final double iconSize = 42;
   final DateFormat dateFormat = DateFormat("dd-MM-yyyy HH:mm:ss");
   final DateFormat timeFormat = DateFormat("HH:mm:ss");
   final TextStyle textStyle = TextStyle(fontSize: 18);
-
-  ForecastPage({Key key, this.forecast}) : super(key: key);
+  final Repository repo = Repository.getInstance();
 
   @override
   Widget build(BuildContext context) {
@@ -26,20 +36,28 @@ class ForecastPage extends StatelessWidget {
                 children: [
                   Positioned(
                     bottom: 10.0,
-                    child: Card(
+                    child: Container(
                       margin: EdgeInsets.symmetric(horizontal: 13.0),
+                      decoration: BoxDecoration(boxShadow: [
+                        BoxShadow(
+                          offset: Offset(0.0, 2.0),
+                          blurRadius: 6.0,
+                          color: Colors.black26,
+                        )
+                      ]),
                       child: Container(
                         color: Color(0xfff5f6fa),
                         height: 280,
                         width: MediaQuery.of(context).size.width - 26,
                         alignment: Alignment.bottomLeft,
-
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Text(
-                              forecast.weather[0].description[0].toUpperCase() +
-                                  forecast.weather[0].description.substring(1),
+                              widget.forecast.weather[0].description[0]
+                                      .toUpperCase() +
+                                  widget.forecast.weather[0].description
+                                      .substring(1),
                               style: textStyle,
                             ),
                             Row(
@@ -54,7 +72,7 @@ class ForecastPage extends StatelessWidget {
                                             size: iconSize,
                                           ),
                                           Text(
-                                            (forecast.main.temp - 273)
+                                            (widget.forecast.main.temp - 273)
                                                     .round()
                                                     .toString() +
                                                 ' \u1d52' +
@@ -75,7 +93,9 @@ class ForecastPage extends StatelessWidget {
                                           Text(
                                             timeFormat.format(DateTime
                                                 .fromMillisecondsSinceEpoch(
-                                                    forecast.sys.sunrise * 1000)),
+                                                    widget.forecast.sys
+                                                            .sunrise *
+                                                        1000)),
                                             style: textStyle,
                                           ),
                                         ],
@@ -96,7 +116,7 @@ class ForecastPage extends StatelessWidget {
                                           ),
                                           Text(
                                             " " +
-                                                (forecast.main.pressure)
+                                                (widget.forecast.main.pressure)
                                                     .round()
                                                     .toString() +
                                                 " hPa",
@@ -116,7 +136,8 @@ class ForecastPage extends StatelessWidget {
                                           Text(
                                             timeFormat.format(DateTime
                                                 .fromMillisecondsSinceEpoch(
-                                                    forecast.sys.sunset * 1000)),
+                                                    widget.forecast.sys.sunset *
+                                                        1000)),
                                             style: textStyle,
                                           ),
                                         ],
@@ -146,13 +167,13 @@ class ForecastPage extends StatelessWidget {
                     child: Stack(
                       children: <Widget>[
                         ClipRRect(
-                          child:
-                              BackgroundPhoto(name: forecast.weather[0].main),
+                          child: BackgroundPhoto(
+                              name: widget.forecast.weather[0].main),
                           borderRadius: BorderRadius.circular(16.0),
                         ),
                         Container(
                           child: Text(
-                            forecast.name,
+                            widget.forecast.name,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 40.0,
@@ -167,38 +188,29 @@ class ForecastPage extends StatelessWidget {
                 ],
               ),
             ),
+            Center(
+              child: IconButton(
+                icon: Icon(
+                  widget.forecast.favorite
+                      ? Icons.favorite
+                      : Icons.favorite_border,
+                  size: 42.0,
+                ),
+                tooltip: widget.forecast.favorite ? "Delete" : "Add",
+                onPressed: () {
+                  if (widget.forecast.favorite) {
+                    repo.deleteCity(widget.forecast.name);
+                  } else {
+                    repo.insertCity(widget.forecast.name);
+                  }
+                  widget.forecast.favorite = !widget.forecast.favorite;
+                  setState(() {});
+                },
+              ),
+            ),
           ],
         ),
       ),
     );
-
-//    Card(
-//      child: Column(
-//        children: [
-//
-//          //Time and Date
-//          Container(
-//            child: Text(
-//              dateFormat.format(DateTime.now()),
-//              style: TextStyle(fontSize: 24),
-//            ),
-//            padding: EdgeInsets.all(paddingWeight),
-//          ),
-//          //Description
-//          Container(
-//            child: Text(
-//              broadcast.weather[0].description[0].toUpperCase() + broadcast.weather[0].description.substring(1),
-//              style: textStyle,
-//            ),
-//            alignment: Alignment.bottomLeft,
-//            margin: EdgeInsets.only(left: 50),
-//          ),
-//          //Icons start here
-//
-//        ],
-//      ),
-//      margin: EdgeInsets.all(20),
-//      elevation: 10,
-//    );
   }
 }

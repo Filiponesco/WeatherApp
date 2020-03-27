@@ -14,6 +14,7 @@ class ForecastEntity with JsonConvert<ForecastEntity> {
 	int id;
 	String name;
 	int cod;
+	bool favorite = false;
 }
 
 class ForecastCoord with JsonConvert<ForecastCoord> {

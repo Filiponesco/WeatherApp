@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:weather_broadcast/models/forecast_entity.dart';
 
 import 'background_photo.dart';
-import 'forecast_page.dart';
+import '../pages/forecast_page.dart';
 
 class ForecastLookup extends StatelessWidget {
   final ForecastEntity forecast;
@@ -15,7 +15,7 @@ class ForecastLookup extends StatelessWidget {
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ForecastPage(forecast: forecast)),
+        MaterialPageRoute(builder: (context) => ForecastPage(forecast: forecast,)),
       ),
       child: Card(
         shape: RoundedRectangleBorder(
