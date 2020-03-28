@@ -5,6 +5,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:weather_broadcast/widgets/forecast_lookup.dart';
 
 import '../repository.dart';
+import 'forecast_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -75,7 +76,9 @@ class HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.search),
-        onPressed: () {},
+        onPressed: () {
+          _searchDialog(context, repo);
+        },
       ),
     );
   }
@@ -98,3 +101,65 @@ Widget _futureLookup(Future<ForecastEntity> forecast, {bool favorite = false}) {
     },
   );
 }
+void _searchDialog(BuildContext context, Repository repo) {
+  TextEditingController cityToSearch = TextEditingController();
+  showDialog<void>(
+    context: context,
+    barrierDismissible: true,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Search city'),
+        content: TextField(
+          controller: cityToSearch,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: 'City',
+          ),
+        ),
+        actions: [
+          FlatButton(
+            child: Text('Cancel'),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          FlatButton(
+            color: Colors.blue,
+            child: Text('Search'),
+            onPressed: () {
+              Future<ForecastEntity> forecastFoundFuture = repo.getBroadcastForCity(cityToSearch.text);
+              forecastFoundFuture.then((data) {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ForecastPage(forecast: data)));
+              });
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+//Filip
+//Widget _futureNewPage(Future<ForecastEntity> forecast) {
+//  debugPrint("_futureNewPage");
+//  return FutureBuilder(
+//    future: forecast,
+//    builder: (context, data) {
+//      debugPrint("FutureBuilder");
+//      if (data.hasData) {
+//        debugPrint("has data");
+//        Navigator.push(
+//            context,
+//            MaterialPageRoute(builder: (context) => ForecastPage(forecast: data.data)));
+//      }else if (data.hasError) {
+//        debugPrint("no data");
+//        Future.delayed(Duration.zero, () => errorDialog(context));
+//        return Column();
+//      }
+//      return Center(
+//        child: CircularProgressIndicator(),
+//      );
+//    },
+//  );
+//}
