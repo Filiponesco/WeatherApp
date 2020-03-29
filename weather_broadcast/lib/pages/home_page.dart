@@ -7,15 +7,19 @@ import 'package:weather_broadcast/widgets/forecast_lookup.dart';
 import '../repository.dart';
 import 'forecast_page.dart';
 
+import 'package:geolocator/geolocator.dart';
+
 class HomePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
+//    HomePageState()._getCurrentLocation();
     return HomePageState();
   }
 }
-
 class HomePageState extends State<HomePage> {
   final repo = Repository.getInstance();
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +30,7 @@ class HomePageState extends State<HomePage> {
       });
     });
 
+//    _getCurrentLocation();
     return Scaffold(
       body: SafeArea(
         child: ListView(
@@ -41,7 +46,7 @@ class HomePageState extends State<HomePage> {
               ),
             ),
             //tutaj masz w _futurelookup dac swoje
-            _futureLookup(repo.getBroadcastForCity("Honolulu")),
+            _futureLookup(repo.getBroadcastForGPS()),
             Padding(
               padding: EdgeInsets.all(5.0),
               child: Text(
@@ -78,6 +83,7 @@ class HomePageState extends State<HomePage> {
         child: Icon(Icons.search),
         onPressed: () {
           _searchDialog(context, repo);
+//          _getCurrentLocation();
         },
       ),
     );

@@ -6,6 +6,9 @@ import 'package:weather_broadcast/models/forecast_entity.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
+import 'package:geolocator/geolocator.dart';
+import 'package:weather_broadcast/pages/home_page.dart';
+
 class Repository {
   final String apiKey = "d525041c8bf169941d6f6f7e3400d59f";
 
@@ -69,5 +72,17 @@ class Repository {
       where: "city = ?",
       whereArgs: [city],
     );
+  }
+
+  Future<ForecastEntity> getBroadcastForGPS() async {
+    final position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+//    List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
+//    print(placemark[0].locality);
+    var url =
+        "https://api.openweathermap.org/data/2.5/weather?lat=${position.latitude}&lon=${position.longitude}&appid=$apiKey";
+
+    var response = await http.get(url);
+    var result = json.decode(response.body);
+    return ForecastEntity().fromJson(result);
   }
 }
