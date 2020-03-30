@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:weather_broadcast/models/forecast_entity.dart';
 import 'package:connectivity/connectivity.dart';
@@ -24,7 +27,7 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     Future<List<Future<ForecastEntity>>> _forecasts =
-        repo.allSavedCities().then((result) {
+    repo.allSavedCities().then((result) {
       return List.generate(result.length, (i) {
         return repo.getBroadcastForCity(result[i]);
       });
@@ -108,64 +111,87 @@ Widget _futureLookup(Future<ForecastEntity> forecast, {bool favorite = false}) {
   );
 }
 void _searchDialog(BuildContext context, Repository repo) {
+  bool _loading = false;
+  bool _errorText = false;
   TextEditingController cityToSearch = TextEditingController();
   showDialog<void>(
     context: context,
     barrierDismissible: true,
     builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Search city'),
-        content: TextField(
-          controller: cityToSearch,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'City',
-          ),
-        ),
-        actions: [
-          FlatButton(
-            child: Text('Cancel'),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          FlatButton(
-            color: Colors.blue,
-            child: Text('Search'),
-            onPressed: () {
-              Future<ForecastEntity> forecastFoundFuture = repo.getBroadcastForCity(cityToSearch.text);
-              forecastFoundFuture.then((data) {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ForecastPage(forecast: data)));
-              });
-            },
-          ),
-        ],
+      return StatefulBuilder(
+          builder: (context, setState){
+            return AlertDialog(
+              title: Text('Search city'),
+              content: TextField(
+                controller: cityToSearch,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'City',
+                  errorText: _errorText ? 'No matching city': null,
+                  suffixIcon: IconButton(
+                    onPressed: () => cityToSearch.clear(),
+                    icon: Icon(Icons.clear),
+                  ),
+                ),
+                  textInputAction: TextInputAction.search,
+                textCapitalization: TextCapitalization.words,
+                onSubmitted: (cityName){
+                  setState((){
+                    if(!_loading)
+                      _loading = true;
+                  });
+                  Future<ForecastEntity> forecastFoundFuture = repo.getBroadcastForCity(cityToSearch.text);
+                  forecastFoundFuture.then((data) {
+                    _loading = false;
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ForecastPage(forecast: data)));
+                  });
+                }
+              ),
+              actions: [
+                FlatButton(
+                  child: Text('Cancel'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                FlatButton(
+                  color: Colors.blue,
+                  child: btnWithLoading(_loading),
+                  onPressed: () {
+                    setState((){
+                      if(!_loading)
+                        _loading = true;
+                    });
+                    Future<ForecastEntity> forecastFoundFuture = repo.getBroadcastForCity(cityToSearch.text);
+                    forecastFoundFuture.then((data) {
+                      _loading = false;
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ForecastPage(forecast: data)));
+                    });
+                  },
+                ),
+              ],
+            );
+          }
       );
     },
   );
 }
-//Filip
-//Widget _futureNewPage(Future<ForecastEntity> forecast) {
-//  debugPrint("_futureNewPage");
-//  return FutureBuilder(
-//    future: forecast,
-//    builder: (context, data) {
-//      debugPrint("FutureBuilder");
-//      if (data.hasData) {
-//        debugPrint("has data");
-//        Navigator.push(
-//            context,
-//            MaterialPageRoute(builder: (context) => ForecastPage(forecast: data.data)));
-//      }else if (data.hasError) {
-//        debugPrint("no data");
-//        Future.delayed(Duration.zero, () => errorDialog(context));
-//        return Column();
-//      }
-//      return Center(
-//        child: CircularProgressIndicator(),
-//      );
-//    },
-//  );
-//}
+Widget btnWithLoading(_loading) {
+  if (!_loading) {
+    return new Text(
+      "Search",
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 16.0,
+      ),
+    );
+  } else{
+    return CircularProgressIndicator(
+      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+    );
+  }
+}
