@@ -143,9 +143,11 @@ void _searchDialog(BuildContext context, Repository repo) {
                   Future<ForecastEntity> forecastFoundFuture = repo.getBroadcastForCity(cityToSearch.text);
                   forecastFoundFuture.then((data) {
                     _loading = false;
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ForecastPage(forecast: data)));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => ForecastPage(forecast: data)))
+                        .then((result) {
+                      Navigator.of(context).pop(); //remove dialog
+                    });
                   });
                 }
               ),
@@ -167,9 +169,11 @@ void _searchDialog(BuildContext context, Repository repo) {
                     Future<ForecastEntity> forecastFoundFuture = repo.getBroadcastForCity(cityToSearch.text);
                     forecastFoundFuture.then((data) {
                       _loading = false;
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => ForecastPage(forecast: data)));
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => ForecastPage(forecast: data)))
+                          .then((result) {
+                        Navigator.of(context).pop(); //remove dialog
+                      });
                     });
                   },
                 ),
