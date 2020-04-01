@@ -160,54 +160,57 @@ void _searchDialog(BuildContext context, Repository repo) {
                   onPressed: () => cityToSearch.clear(),
                   icon: Icon(Icons.clear),
                 ),
-                  textInputAction: TextInputAction.search,
-                textCapitalization: TextCapitalization.words,
-                onSubmitted: (cityName){
-                  setState((){
-                    if(!_loading)
-                      _loading = true;
-                  });
-                  Future<ForecastEntity> forecastFoundFuture = repo.getBroadcastForCity(cityToSearch.text);
-                  forecastFoundFuture.then((data) {
-                    _loading = false;
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => ForecastPage(forecast: data)))
-                        .then((result) {
-                      Navigator.of(context).pop(); //remove dialog
-                    });
-                  });
-                }
               ),
-              actions: [
-                FlatButton(
-                  child: Text('Cancel'),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                FlatButton(
-                  color: Colors.blue,
-                  child: btnWithLoading(_loading),
-                  onPressed: () {
-                    setState((){
-                      if(!_loading)
-                        _loading = true;
-                    });
-                    Future<ForecastEntity> forecastFoundFuture = repo.getBroadcastForCity(cityToSearch.text);
-                    forecastFoundFuture.then((data) {
-                      _loading = false;
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => ForecastPage(forecast: data)))
-                          .then((result) {
-                        Navigator.of(context).pop(); //remove dialog
-                      });
-                    });
-                  },
-                ),
-              ],
-            );
-          }
-      );
+              textInputAction: TextInputAction.search,
+              textCapitalization: TextCapitalization.words,
+              onSubmitted: (cityName) {
+                setState(() {
+                  if (!_loading) _loading = true;
+                });
+                Future<ForecastEntity> forecastFoundFuture =
+                    repo.getBroadcastForCity(cityToSearch.text);
+                forecastFoundFuture.then((data) {
+                  _loading = false;
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              ForecastPage(forecast: data))).then((result) {
+                    Navigator.of(context).pop(); //remove dialog
+                  });
+                });
+              }),
+          actions: [
+            FlatButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            FlatButton(
+              color: Colors.blue,
+              child: btnWithLoading(_loading),
+              onPressed: () {
+                setState(() {
+                  if (!_loading) _loading = true;
+                });
+                Future<ForecastEntity> forecastFoundFuture =
+                    repo.getBroadcastForCity(cityToSearch.text);
+                forecastFoundFuture.then((data) {
+                  _loading = false;
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              ForecastPage(forecast: data))).then((result) {
+                    Navigator.of(context).pop(); //remove dialog
+                  });
+                });
+              },
+            ),
+          ],
+        );
+      });
     },
   );
 }
