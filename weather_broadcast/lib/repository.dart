@@ -5,9 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:weather_broadcast/models/forecast_entity.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-
 import 'package:geolocator/geolocator.dart';
-import 'package:weather_broadcast/pages/home_page.dart';
 
 class Repository {
   final String apiKey = "d525041c8bf169941d6f6f7e3400d59f";
