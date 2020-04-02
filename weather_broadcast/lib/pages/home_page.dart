@@ -165,28 +165,36 @@ void _searchDialog(BuildContext context, Repository repo) {
               textInputAction: TextInputAction.search,
               textCapitalization: TextCapitalization.words,
               onSubmitted: (s) {
-                setState(() {
-                  if (!_loading) _loading = true;
-                });
-                Future<ForecastEntity> forecastFoundFuture =
-                    repo.getBroadcastForCity(cityToSearch.text);
-                forecastFoundFuture.then((data) {
-                  _loading = false;
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              ForecastPage(forecast: data))).then((result) {
-                    Navigator.of(context).pop(); //remove dialog
-                  });
-                }).catchError((error) {
-                  debugPrint("Error");
+                if(cityToSearch.text.isEmpty) {
                   setState(() {
-                    _loading = false;
                     _isError = true;
-                    _messageError = error;
+                    _messageError = "The field cannot be empty";
                   });
-                });
+                }
+                else {
+                  setState(() {
+                    if (!_loading) _loading = true;
+                  });
+                  Future<ForecastEntity> forecastFoundFuture =
+                  repo.getBroadcastForCity(cityToSearch.text);
+                  forecastFoundFuture.then((data) {
+                    _loading = false;
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ForecastPage(forecast: data))).then((result) {
+                      Navigator.of(context).pop(); //remove dialog
+                    });
+                  }).catchError((error) {
+                    debugPrint("Error");
+                    setState(() {
+                      _loading = false;
+                      _isError = true;
+                      _messageError = error;
+                    });
+                  });
+                } //Else
               }),
           actions: [
             FlatButton(
@@ -199,28 +207,36 @@ void _searchDialog(BuildContext context, Repository repo) {
                 color: Colors.blue,
                 child: btnWithLoading(_loading),
                 onPressed: () {
-                  setState(() {
-                    if (!_loading) _loading = true;
-                  }); // setState
-                  Future<ForecastEntity> forecastFoundFuture =
-                      repo.getBroadcastForCity(cityToSearch.text);
-                  forecastFoundFuture.then((data) {
-                    _loading = false;
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                ForecastPage(forecast: data))).then((result) {
-                      Navigator.of(context).pop(); //Remove dialog
-                    });
-                  }).catchError((error) {
-                    debugPrint("Error");
+                  if(cityToSearch.text.isEmpty) {
                     setState(() {
-                      _loading = false;
                       _isError = true;
-                      _messageError = error;
+                      _messageError = "The field cannot be empty";
                     });
-                  });
+                  }
+                  else {
+                    setState(() {
+                      if (!_loading) _loading = true;
+                    }); // setState
+                    Future<ForecastEntity> forecastFoundFuture =
+                    repo.getBroadcastForCity(cityToSearch.text);
+                    forecastFoundFuture.then((data) {
+                      _loading = false;
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  ForecastPage(forecast: data))).then((result) {
+                        Navigator.of(context).pop(); //Remove dialog
+                      });
+                    }).catchError((error) {
+                      debugPrint("Error");
+                      setState(() {
+                        _loading = false;
+                        _isError = true;
+                        _messageError = error;
+                      });
+                    });
+                  }
                 }),
           ],
         );
