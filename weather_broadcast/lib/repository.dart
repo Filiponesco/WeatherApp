@@ -24,8 +24,20 @@ class Repository {
     var url =
         "https://api.openweathermap.org/data/2.5/weather?q=$name&appid=$apiKey";
     var response = await http.get(url);
-    var result = json.decode(response.body);
-    return ForecastEntity().fromJson(result);
+
+    if(response.statusCode == 200){
+      var result = json.decode(response.body);
+      return ForecastEntity().fromJson(result);
+    }
+    else if(response.statusCode == 404){
+      //{"cod":"404","message":"city not found"}
+      var result = response.body;
+      Map<String, dynamic> myError = jsonDecode(result);
+      throw (myError["message"]);
+    }
+    else{
+      throw("Server connection problem");
+    }
   }
 
   final Future<Database> database = getDatabasesPath().then((String path) {

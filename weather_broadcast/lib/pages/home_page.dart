@@ -141,7 +141,8 @@ class HomePageState extends State<HomePage> {
 
 void _searchDialog(BuildContext context, Repository repo) {
   bool _loading = false;
-  bool _errorText = false;
+  bool _isError = false;
+  String _messageError;
   TextEditingController cityToSearch = TextEditingController();
   showDialog<void>(
     context: context,
@@ -155,7 +156,7 @@ void _searchDialog(BuildContext context, Repository repo) {
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'City',
-                errorText: _errorText ? 'No matching city' : null,
+                errorText: _isError ? _messageError : null,
                 suffixIcon: IconButton(
                   onPressed: () => cityToSearch.clear(),
                   icon: Icon(Icons.clear),
@@ -163,7 +164,7 @@ void _searchDialog(BuildContext context, Repository repo) {
               ),
               textInputAction: TextInputAction.search,
               textCapitalization: TextCapitalization.words,
-              onSubmitted: (cityName) {
+              onSubmitted: (s) {
                 setState(() {
                   if (!_loading) _loading = true;
                 });
@@ -177,6 +178,13 @@ void _searchDialog(BuildContext context, Repository repo) {
                           builder: (context) =>
                               ForecastPage(forecast: data))).then((result) {
                     Navigator.of(context).pop(); //remove dialog
+                  });
+                }).catchError((error) {
+                  debugPrint("Error");
+                  setState(() {
+                    _loading = false;
+                    _isError = true;
+                    _messageError = error;
                   });
                 });
               }),
@@ -188,26 +196,32 @@ void _searchDialog(BuildContext context, Repository repo) {
               },
             ),
             FlatButton(
-              color: Colors.blue,
-              child: btnWithLoading(_loading),
-              onPressed: () {
-                setState(() {
-                  if (!_loading) _loading = true;
-                });
-                Future<ForecastEntity> forecastFoundFuture =
-                    repo.getBroadcastForCity(cityToSearch.text);
-                forecastFoundFuture.then((data) {
-                  _loading = false;
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              ForecastPage(forecast: data))).then((result) {
-                    Navigator.of(context).pop(); //remove dialog
+                color: Colors.blue,
+                child: btnWithLoading(_loading),
+                onPressed: () {
+                  setState(() {
+                    if (!_loading) _loading = true;
+                  }); // setState
+                  Future<ForecastEntity> forecastFoundFuture =
+                      repo.getBroadcastForCity(cityToSearch.text);
+                  forecastFoundFuture.then((data) {
+                    _loading = false;
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ForecastPage(forecast: data))).then((result) {
+                      Navigator.of(context).pop(); //Remove dialog
+                    });
+                  }).catchError((error) {
+                    debugPrint("Error");
+                    setState(() {
+                      _loading = false;
+                      _isError = true;
+                      _messageError = error;
+                    });
                   });
-                });
-              },
-            ),
+                }),
           ],
         );
       });
