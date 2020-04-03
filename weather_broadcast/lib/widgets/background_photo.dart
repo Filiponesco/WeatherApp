@@ -20,12 +20,14 @@ class BackgroundPhoto extends StatelessWidget {
       case "mist":
       case "smoke":
       case "haze":
-      case "dust":
       case "fog":
-      case "sand":
-      case "ash":
       case "squall":
         return "assets/images/fog.jpg";
+        break;
+      case "dust":
+      case "sand":
+      case "ash":
+        return "assets/images/dust.jpg";
         break;
       case "tornado":
         return "assets/images/tornado.jpg";
