@@ -54,14 +54,16 @@ class Repository {
 
   Future<void> insertCity(String city) async {
     final Database db = await database;
-
-    await db.insert(
-      'locations',
-      {
-        'city': city,
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    List<Map> temp = await db.rawQuery('SELECT * FROM locations WHERE city = \'$city\'');
+    //print(temp);
+    if(temp.length <= 0)
+      await db.insert(
+        'locations',
+        {
+          'city': city,
+        },
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
   }
 
   Future<List<String>> allSavedCities() async {

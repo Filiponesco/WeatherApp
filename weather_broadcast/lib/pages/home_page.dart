@@ -8,6 +8,7 @@ import 'package:weather_broadcast/widgets/forecast_lookup.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../repository.dart';
+import '../widgets/background_photo.dart';
 import 'forecast_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -63,7 +64,26 @@ class HomePageState extends State<HomePage> {
               );
             }
           }
-          return Center(child: CircularProgressIndicator());
+          return Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+            margin: EdgeInsets.symmetric(
+              horizontal: 20.0,
+              vertical: 10.0,
+            ),
+            elevation: 10,
+            child: Stack(
+              children: <Widget>[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16.0),
+                  child: Image.asset("assets/images/loading.png"),
+                ),
+                Center(child: CircularProgressIndicator()),
+              ],
+              alignment: Alignment.center,
+            ),
+          );
         },
       );
     }
@@ -81,26 +101,36 @@ class HomePageState extends State<HomePage> {
           child: ListView(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.all(5.0),
+                padding: EdgeInsets.only(
+                  left: 15.0,
+                  top: 8.0,
+                  bottom: 5.0,
+                ),
                 child: Text(
                   "Current location",
                   style: TextStyle(
-                    fontSize: 28.0,
+                    fontSize: 32.0,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
+              Divider(),
               _futureLookup(repo.getBroadcastForGPS()),
               Padding(
-                padding: EdgeInsets.all(5.0),
+                padding: EdgeInsets.only(
+                  left: 15.0,
+                  top: 8.0,
+                  bottom: 5.0,
+                ),
                 child: Text(
                   "Saved locations",
                   style: TextStyle(
-                    fontSize: 28.0,
+                    fontSize: 32.0,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
+              Divider(),
               FutureBuilder(
                 future: _forecasts,
                 builder: (context, snapshot) {
@@ -165,18 +195,17 @@ void _searchDialog(BuildContext context, Repository repo) {
               textInputAction: TextInputAction.search,
               textCapitalization: TextCapitalization.words,
               onSubmitted: (s) {
-                if(cityToSearch.text.isEmpty) {
+                if (cityToSearch.text.isEmpty) {
                   setState(() {
                     _isError = true;
                     _messageError = "The field cannot be empty";
                   });
-                }
-                else {
+                } else {
                   setState(() {
                     if (!_loading) _loading = true;
                   });
                   Future<ForecastEntity> forecastFoundFuture =
-                  repo.getBroadcastForCity(cityToSearch.text);
+                      repo.getBroadcastForCity(cityToSearch.text);
                   forecastFoundFuture.then((data) {
                     _loading = false;
                     Navigator.push(
@@ -207,18 +236,17 @@ void _searchDialog(BuildContext context, Repository repo) {
                 color: Colors.blue,
                 child: btnWithLoading(_loading),
                 onPressed: () {
-                  if(cityToSearch.text.isEmpty) {
+                  if (cityToSearch.text.isEmpty) {
                     setState(() {
                       _isError = true;
                       _messageError = "The field cannot be empty";
                     });
-                  }
-                  else {
+                  } else {
                     setState(() {
                       if (!_loading) _loading = true;
                     }); // setState
                     Future<ForecastEntity> forecastFoundFuture =
-                    repo.getBroadcastForCity(cityToSearch.text);
+                        repo.getBroadcastForCity(cityToSearch.text);
                     forecastFoundFuture.then((data) {
                       _loading = false;
                       Navigator.push(
